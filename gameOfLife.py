@@ -118,3 +118,8 @@ button.grid(row=21,column=0,columnspan=21)
 
 comeAlive()
 mainWindow.mainloop()
+
+
+"""
+UN MONTON DE BASURA!!!!!!!!!!!!!!!!!!!!!!!!!!
+"""
