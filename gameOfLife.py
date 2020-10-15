@@ -8,7 +8,7 @@ import numpy as np
 
 cellsData = np.zeros((21,21))
 cellsList = []
-debugMode = False
+debugMode = True
 programRunning = 0
 stopSignal = False
 
