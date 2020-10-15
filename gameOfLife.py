@@ -1,6 +1,7 @@
 import tkinter
 import random
 import numpy as np
+import functools
 
 #------------------------------------------------------
 # App Logic
@@ -8,7 +9,7 @@ import numpy as np
 
 cellsData = np.zeros((21,21))
 cellsList = []
-debugMode = True
+debugMode = False
 programRunning = 0
 stopSignal = False
 
@@ -165,6 +166,40 @@ def comeAlive():
 
 
 #------------------------------------------------------
+# Custom Disposition Window construction
+#------------------------------------------------------
+
+def customDispositionWindow():
+  customDispositionWindow = tkinter.Tk()
+
+  frameCustom = tkinter.LabelFrame(customDispositionWindow)
+  frameCustom.grid(row=0,column=0)
+
+  buttonList = []
+
+  for row in range(0,21):
+    for col in range(0,21):
+      button = tkinter.Button(frameCustom,width=2,height=1)    
+      button.grid(row=row,column=col) 
+      buttonList.append(button)
+  
+  def checkClick():
+    for x in buttonList:
+      x.configure(command=functools.partial(makeAlive,x))
+  
+  checkClick()
+  customDispositionWindow.mainloop()
+
+#------------------------------------------------------
+# Custom Disposition Window logic
+#------------------------------------------------------
+
+def makeAlive(button):
+  if button['bg'] == 'SystemButtonFace':
+    button['bg'] = 'green'
+  else:
+    button['bg'] = 'SystemButtonFace'
+#------------------------------------------------------
 # Window Construction
 #------------------------------------------------------
 
@@ -208,4 +243,13 @@ defaultDisposition2.grid(row=3,column=1)
 defaultDisposition3 = tkinter.Button(frameMenu,text="3",width=8,height=4,command=lambda:disposition(3))
 defaultDisposition3.grid(row=3,column=2)
 
+customDisposition = tkinter.Button(frameMenu,text="Custom",width=32,height=4,command=customDispositionWindow)
+customDisposition.grid(row=4,column=0,columnspan=3)
+
+
 mainWindow.mainloop()
+
+
+"""
+CUSTOOOOM
+"""
