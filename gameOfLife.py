@@ -13,12 +13,12 @@ debugMode = False
 programRunning = 0
 stopSignal = False
 
-def runControl():
+def runControl(source):
 
   global programRunning
   global stopSignal
 
-  if programRunning == 0:
+  if programRunning == 0 and source != "customButton":
     start['state'] = "disabled"
     stop['state'] = "normal"
     defaultDisposition1['state'] = 'disabled'
@@ -26,6 +26,7 @@ def runControl():
     defaultDisposition3['state'] = 'disabled'
     programRunning = 1
     checkLife()
+
   elif programRunning == 1:
     start['state'] = "normal"
     stop['state'] = "disabled"
@@ -34,6 +35,7 @@ def runControl():
     defaultDisposition3['state'] = 'normal'
     programRunning = 0
     stopSignal = True
+
 
 def disposition(disposition):
 
@@ -164,6 +166,8 @@ def comeAlive():
     else:
       x['bg'] = 'black'
 
+def exit(window):
+  window.destroy()
 
 #------------------------------------------------------
 # Custom Disposition Window construction
@@ -171,11 +175,17 @@ def comeAlive():
 
 def customDispositionWindow():
   customDispositionWindow = tkinter.Tk()
+  customDispositionWindow.title("Custom disposition")
+  runControl("customButton")
 
   frameCustom = tkinter.LabelFrame(customDispositionWindow)
   frameCustom.grid(row=0,column=0)
 
+  frameCustomMenu = tkinter.LabelFrame(customDispositionWindow)
+  frameCustomMenu.grid(row=0,column=1)
+
   buttonList = []
+  cellsDataCustom = np.zeros((21,21))
 
   for row in range(0,21):
     for col in range(0,21):
@@ -185,7 +195,16 @@ def customDispositionWindow():
   
   def checkClick():
     for x in buttonList:
-      x.configure(command=functools.partial(makeAlive,x))
+      x.configure(command=functools.partial(makeAlive,x,cellsDataCustom))
+
+  addButton = tkinter.Button(frameCustomMenu,height=5,text="Save Disposition",command=lambda:saveDisposition(cellsDataCustom,customDispositionWindow))
+  addButton.grid(row=0,column=1,pady=(0,20))
+
+  clearButton = tkinter.Button(frameCustomMenu,width=13,height=5,text="Clear Grid",command=lambda:clearGrid(buttonList,cellsDataCustom))
+  clearButton.grid(row=1,column=1,pady=(0,20))
+
+  exitButton = tkinter.Button(frameCustomMenu,width=13,height=5,text="Cancel",command=lambda:exit(customDispositionWindow))
+  exitButton.grid(row=2,column=1,pady=(0,20))
   
   checkClick()
   customDispositionWindow.mainloop()
@@ -194,11 +213,28 @@ def customDispositionWindow():
 # Custom Disposition Window logic
 #------------------------------------------------------
 
-def makeAlive(button):
+def makeAlive(button,cellsDataCustom):
   if button['bg'] == 'SystemButtonFace':
     button['bg'] = 'green'
+    cellsDataCustom[button.grid_info()['row']][button.grid_info()['column']] = 1
   else:
     button['bg'] = 'SystemButtonFace'
+    cellsDataCustom[button.grid_info()['row']][button.grid_info()['column']] = 0
+
+def saveDisposition(cellsDataCustom,window):
+  global cellsData
+  cellsData = cellsDataCustom
+  comeAlive()
+  exit(window)
+  
+def clearGrid(buttonList,cellsDataCustom):
+  for x in buttonList:
+    if x['bg'] == 'green':
+      x['bg'] = 'SystemButtonFace'
+      cellsDataCustom[x.grid_info()['row']][x.grid_info()['column']] = 0
+      
+
+
 #------------------------------------------------------
 # Window Construction
 #------------------------------------------------------
@@ -223,10 +259,10 @@ for row in range(0,21):
 
 # START/STOP BUTTONS
 
-start = tkinter.Button(frameMenu,text="Start",width=20,height=5,command=lambda:runControl())
+start = tkinter.Button(frameMenu,text="Start",width=20,height=5,command=lambda:runControl("startButton"))
 start.grid(row=0,column=0,columnspan=3,pady=(0,20))
 
-stop = tkinter.Button(frameMenu,text="Stop",width=20,height=5,state='disabled',command=lambda:runControl())
+stop = tkinter.Button(frameMenu,text="Stop",width=20,height=5,state='disabled',command=lambda:runControl("stopButton"))
 stop.grid(row=1,column=0,columnspan=3,pady=(0,40))
 
 # DISPOSITIONS MENU
