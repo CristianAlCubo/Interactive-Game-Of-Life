@@ -285,7 +285,3 @@ customDisposition.grid(row=4,column=0,columnspan=3)
 
 mainWindow.mainloop()
 
-
-"""
-CUSTOOOOM
-"""
